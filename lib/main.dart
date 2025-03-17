@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
-import 'home.dart'; // Importation du fichier home.dart
-import 'mqtt.dart';
-
-final Mqtt mqtt = Mqtt();
+import 'Screens/home_page.dart';
 
 void main() {
   runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Hackathon',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: MyHomePage(),
+    );
+  }
 }

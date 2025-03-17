@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../Service/mqtt.dart';
 import '../Widgets/SpeechBottomSheet.dart';
-import '../mqtt.dart';
 import '../Model/Device.dart';
 import '../widgets/device_card.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -13,9 +13,6 @@ class MyHomePage extends StatefulWidget {
 
 class _HomePage extends State<MyHomePage> {
   final Mqtt mqtt = Mqtt(); // Instance MQTT
-  SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
-  String _lastWords = '';
   SpeechBottomSheet? _speechBottomSheet;
 
   List<Device> devices = [
@@ -29,7 +26,6 @@ class _HomePage extends State<MyHomePage> {
   void initState() {
     super.initState();
     mqtt.connect(); // Connexion automatique à MQTT
-    _initSpeech();
   }
 
   void toggleDevice(Device device) {
@@ -44,30 +40,12 @@ class _HomePage extends State<MyHomePage> {
     setState(() {}); // Met à jour l'interface
   }
 
-  /// This has to happen only once per app
-  void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-    setState(() {});
+  void _onCommandDetected(String? status, List<String> words) {
+    print("Status: $status, Words: $words");
   }
-
-  /// Each time to start a speech recognition session
-  void _startListening() async {
-    await _speechToText.listen(onResult: _onSpeechResult);
-    setState(() {});
-  }
-  void _onSpeechResult(SpeechRecognitionResult result) {
-    setState(() {
-      _lastWords = result.recognizedWords;
-    });
-
-    // Met à jour le texte dans le BottomSheet
-    _speechBottomSheet?.updateText(_lastWords);
-  }
-
-
 
   void _showSpeechBottomSheet() {
-    _speechBottomSheet = SpeechBottomSheet(speechToText: _speechToText);
+    _speechBottomSheet = SpeechBottomSheet(onCommandDetected: _onCommandDetected,);
 
     showModalBottomSheet(
       context: context,
@@ -77,12 +55,6 @@ class _HomePage extends State<MyHomePage> {
       },
     );
   }
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -112,13 +84,10 @@ class _HomePage extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (_speechToText.isNotListening) {
-            _startListening();
-          }
           _showSpeechBottomSheet();
         },
         tooltip: 'Écouter',
-        child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
+        child: Icon(SpeechBottomSheet.isNotListening() ? Icons.mic_off : Icons.mic),
       ),
     );
   }
