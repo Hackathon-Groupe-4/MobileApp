@@ -45,6 +45,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   build_runner: ^2.4.15
+  flutter_svg: ^2.0.17
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -59,11 +60,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/img/flower.png
-    - assets/img/grandeGoutte.png
-    - assets/img/petiteGoutte.png
-    - assets/img/parametres.png
-    - assets/img/retour.png
+    - assets/icons/power.svg
  
 
   # An image asset can refer to one or more resolution-specific "variants", see
