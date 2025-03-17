@@ -3,7 +3,7 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import 'dart:math';
 
 class Mqtt {
-  final String broker = '192.168.238.56'; // Remplacez par votre broker MQTT
+  final String broker = '192.168.243.95'; // Remplacez par votre broker MQTT
   final String clientIdentifier = 'flutter_client_${Random().nextInt(100000)}';
   MqttServerClient? client;
 

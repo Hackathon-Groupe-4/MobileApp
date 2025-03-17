@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'styles.dart';
-import 'main.dart';
+import 'mqtt.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -22,19 +21,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<MyHomePage> {
+  final Mqtt mqtt = Mqtt(); // Instance MQTT
+  bool state = false;
 
   @override
   void initState() {
     super.initState();
+    mqtt.connect(); // Connexion automatique à MQTT
+  }
+
+  void sendMessage() {
+    mqtt.publishMessage("HomeConnect/ESP32Light", state?"OFF":"ON"); // Envoi du message
+    state=!state;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Text("Hackathon")
-        ],
+      appBar: AppBar(title: Text("Hackathon")),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: sendMessage,
+          child: Text("Envoyer un message"),
+        ),
       ),
     );
   }
