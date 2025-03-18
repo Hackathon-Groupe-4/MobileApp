@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import '../Services/mqtt.dart';
 import '../Services/device_service.dart';
+import '../Services/toast_service.dart';
 import '../Widgets/SpeechBottomSheet.dart';
 import '../Model/Device.dart';
 import '../widgets/device_card.dart';
@@ -71,7 +72,7 @@ class _HomePage extends State<MyHomePage> {
   }
 
   void _onCommandDetected(String sentence) async {
-     bool iswork = await DeviceService.postTextToIa(sentence);
+     await DeviceService.postTextToIa(sentence);
   }
 
 

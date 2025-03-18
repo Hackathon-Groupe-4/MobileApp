@@ -8,30 +8,38 @@ class DeviceService {
 
   // Fetch all devices
   static Future<List<Device>> getAllDevices() async {
-    final response = await http.get(Uri.parse('$baseUrl/devices'));
-    if (response.statusCode == 200) {
-      ToastService.showToast("✅ Chargement des appareils...");
-      List<dynamic> jsonResponse = json.decode(response.body);
-      return jsonResponse.map((device) => Device.fromJson(device)).toList();
-    } else {
+    try{
+      final response = await http.get(Uri.parse('$baseUrl/devices'));
+      if (response.statusCode == 200) {
+        ToastService.showToast("✅ Chargement des appareils...");
+        List<dynamic> jsonResponse = json.decode(response.body);
+        return jsonResponse.map((device) => Device.fromJson(device)).toList();
+      } else {
+        throw Exception('Failed to load devices');
+      }
+    }catch(Exection){
       ToastService.showToast("❌ Echec du chargement des appareils...");
       throw Exception('Failed to load devices');
     }
+
   }
 
-  static Future<bool> postTextToIa(String sentence) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/TextToIa'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'text': sentence}),
-    );
+  static Future<void> postTextToIa(String sentence) async {
+    try{
+      final response = await http.post(
+        Uri.parse('$baseUrl/TextToIa'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'text': sentence}),
+      );
 
-    if (response.statusCode == 200) {
-      print('✅ Réponse reçue: ${response.body}');
-      return true;
-    } else {
-      print('❌ Erreur: ${response.statusCode}');
-      return false;
+      if (response.statusCode == 200) {
+        print('✅ Réponse reçue: ${response.body}');
+      } else {
+        print('❌ Erreur: ${response.statusCode}');
+        ToastService.showToast('❌ Erreur lors de l\'envoi du message vers IA');
+      }
+    }catch(Exection){
+      ToastService.showToast('❌ Erreur lors de l\'envoi du message vers IA');
     }
   }
 
