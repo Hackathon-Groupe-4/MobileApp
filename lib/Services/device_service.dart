@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../Model/Device.dart';
 
 class DeviceService {
-  static const String baseUrl = 'https://hackathon25-4.vercel.app/';
+  static const String baseUrl = 'http://192.168.243.18:3000';
 
   // Fetch all devices
   static Future<List<Device>> getAllDevices() async {

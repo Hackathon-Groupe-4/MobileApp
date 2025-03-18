@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
-import '../Service/mqtt.dart';
+import '../Services/mqtt.dart';
 import '../Services/device_service.dart';
 import '../Widgets/SpeechBottomSheet.dart';
 import '../Model/Device.dart';

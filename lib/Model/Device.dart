@@ -8,8 +8,8 @@ class Device {
   factory Device.fromJson(Map<String, dynamic> json) {
     return Device(
       id: json["id"],
-      name: json["name"],
-      state: json["state"],
+      name: json["label"],
+      state: json["status"],
     );
   }
 }
