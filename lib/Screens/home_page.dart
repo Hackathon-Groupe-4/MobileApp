@@ -70,9 +70,22 @@ class _HomePage extends State<MyHomePage> {
     setState(() {}); // Met à jour l'interface
   }
 
-  void _onCommandDetected(String? status, List<String> words) {
-    print("Status: $status, Words: $words");
+  void _onCommandDetected(String? status, String sense) {
+    print("Status: $status, Sense: $sense");
+
+    Device? device = devices.firstWhere(
+          (d) => d.name.toLowerCase() == sense.toLowerCase(),
+      orElse: () => Device(id: '', name: ''),
+    );
+
+    if (device.id.isNotEmpty) {
+      print("Appareil trouvé: ${device.name} (ID: ${device.id})");
+      toggleDevice(device);
+    } else {
+      print("⚠️ Aucun appareil trouvé pour '$sense'");
+    }
   }
+
 
   void _showSpeechBottomSheet() {
     _speechBottomSheet = SpeechBottomSheet(onCommandDetected: _onCommandDetected,);

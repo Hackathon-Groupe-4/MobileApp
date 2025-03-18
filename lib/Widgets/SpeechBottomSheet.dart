@@ -3,7 +3,7 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 class SpeechBottomSheet extends StatefulWidget {
-  final void Function(String? status, List<String> words) onCommandDetected; // Callback
+  final void Function(String? status, String Sense) onCommandDetected; // Callback
 
   SpeechBottomSheet({Key? key, required this.onCommandDetected}) : super(key: key);
 
@@ -70,15 +70,15 @@ class _SpeechBottomSheetState extends State<SpeechBottomSheet> {
     List<String> words = sentence.toLowerCase().split(' ');
     String? status;
 
-    if (words.contains("allume")) {
+    if (words[0] == "allume") {
       status = "ON";
-    } else if (words.contains("éteins")) {
+    } else if (words[0] == "éteins") {
       status = "OFF";
     }
 
     words.removeWhere((word) => word == "allume" || word == "éteins");
 
-    widget.onCommandDetected(status, words);
+    widget.onCommandDetected(status, words.join(" "));
   }
 
   @override
