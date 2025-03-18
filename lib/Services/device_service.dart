@@ -20,4 +20,21 @@ class DeviceService {
       throw Exception('Failed to load devices');
     }
   }
+
+  static Future<bool> postTextToIa(String sentence) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/TextToIa'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'text': sentence}),
+    );
+
+    if (response.statusCode == 200) {
+      print('✅ Réponse reçue: ${response.body}');
+      return true;
+    } else {
+      print('❌ Erreur: ${response.statusCode}');
+      return false;
+    }
+  }
+
 }
