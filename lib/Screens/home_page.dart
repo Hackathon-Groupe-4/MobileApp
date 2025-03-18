@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import '../Service/mqtt.dart';
+import '../Services/device_service.dart';
 import '../Widgets/SpeechBottomSheet.dart';
 import '../Model/Device.dart';
 import '../widgets/device_card.dart';
+
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -24,6 +26,7 @@ class _HomePage extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    getDevices();
     mqtt.connect().then((_) {
       _subscribeToDevices();
     });
@@ -62,8 +65,8 @@ class _HomePage extends State<MyHomePage> {
     mqtt.publishMessage("HomeConnect/${device.id}", !device.state ? "ON" : "OFF");
   }
 
-  Future<void> _refreshDevices() async {
-    await Future.delayed(Duration(seconds: 1));
+  Future<void> getDevices() async {
+    devices = await DeviceService.getAllDevices();
     setState(() {}); // Met à jour l'interface
   }
 
@@ -88,7 +91,7 @@ class _HomePage extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(title: Text("Hackathon")),
       body: RefreshIndicator(
-        onRefresh: _refreshDevices, // Fonction de rafraîchissement
+        onRefresh: getDevices, // Fonction de rafraîchissement
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: GridView.builder(
