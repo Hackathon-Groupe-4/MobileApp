@@ -48,12 +48,6 @@ class _HomePage extends State<MyHomePage> {
         }
       }
     });
-
-    // Vérifier si MQTT se reconnecte et réabonner les topics
-    mqtt.client!.onConnected = () {
-      print('✅ Reconnexion réussie');
-      _subscribeToDevices();
-    };
   }
 
   void _subscribeToDevices() {

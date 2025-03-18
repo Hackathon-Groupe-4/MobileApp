@@ -7,7 +7,6 @@ class Mqtt {
   final String broker = '192.168.243.95'; // Remplace par ton broker
   final String clientIdentifier = 'flutter_client_${Random().nextInt(100000)}';
   MqttServerClient? client;
-  Timer? _reconnectTimer;
 
   Future<void> connect() async {
     client = MqttServerClient(broker, clientIdentifier);
@@ -16,6 +15,10 @@ class Mqtt {
     client!.onDisconnected = onDisconnected;
     client!.onConnected = onConnected;
     client!.onSubscribed = onSubscribed;
+
+    // ✅ Active la reconnexion automatique
+    client!.autoReconnect = true;
+    client!.resubscribeOnAutoReconnect = true;
 
     final connMessage = MqttConnectMessage()
         .withClientIdentifier(clientIdentifier)
@@ -26,23 +29,13 @@ class Mqtt {
       await client!.connect();
       if (client!.connectionStatus!.state == MqttConnectionState.connected) {
         print('✅ MQTT connecté');
-        _reconnectTimer?.cancel(); // Annule la reconnexion si c'est OK
       } else {
         print('❌ Connexion échouée, état: ${client!.connectionStatus!.state}');
         client!.disconnect();
-        _startReconnect(); // Tente une reconnexion
       }
     } catch (e) {
       print('⚠️ Exception MQTT: $e');
       client!.disconnect();
-      _startReconnect(); // Tente une reconnexion
-    }
-  }
-
-  void _startReconnect() {
-    if (_reconnectTimer == null || !_reconnectTimer!.isActive) {
-      print('🔄 Tentative de reconnexion dans 5 secondes...');
-      _reconnectTimer = Timer(Duration(seconds: 5), connect);
     }
   }
 
@@ -52,7 +45,6 @@ class Mqtt {
 
   void onDisconnected() {
     print('❌ MQTT déconnecté, tentative de reconnexion...');
-    _startReconnect(); // Relance la connexion automatiquement
   }
 
   void onSubscribed(String topic) {
