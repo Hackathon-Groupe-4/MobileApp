@@ -27,9 +27,9 @@ class DeviceService {
   static Future<void> postTextToIa(String sentence) async {
     try{
       final response = await http.post(
-        Uri.parse('$baseUrl/TextToIa'),
+        Uri.parse('$baseUrl/openai'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'text': sentence}),
+        body: json.encode({'content': sentence}),
       );
 
       if (response.statusCode == 200) {
