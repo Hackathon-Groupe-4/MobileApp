@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import '../Service/mqtt.dart';
 import '../Widgets/SpeechBottomSheet.dart';
 import '../Model/Device.dart';
 import '../widgets/device_card.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -25,14 +24,48 @@ class _HomePage extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    mqtt.connect(); // Connexion automatique à MQTT
+    mqtt.connect().then((_) {
+      _subscribeToDevices();
+    });
+
+    // Écoute les mises à jour MQTT
+    mqtt.client!.updates!.listen((List<MqttReceivedMessage<MqttMessage>> messages) {
+      for (var message in messages) {
+        final recMess = message.payload as MqttPublishMessage;
+        final payload = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+
+        print('📩 Message reçu sur ${message.topic}: $payload');
+
+        // Identifier l'appareil concerné
+        String deviceId = message.topic.replaceFirst('HomeConnect/', '');
+        Device? device = devices.firstWhere((d) => d.id == deviceId, orElse: () => Device(id: '', name: ''));
+
+        if (device.id.isNotEmpty) {
+          setState(() {
+            device.state = payload.trim().toUpperCase() == "ON";
+          });
+          print('🔄 ${device.name} est maintenant ${device.state ? "ALLUMÉ" : "ÉTEINT"}');
+        }
+      }
+    });
+
+    // Vérifier si MQTT se reconnecte et réabonner les topics
+    mqtt.client!.onConnected = () {
+      print('✅ Reconnexion réussie');
+      _subscribeToDevices();
+    };
   }
 
+  void _subscribeToDevices() {
+    for (var device in devices) {
+      mqtt.subscribeToTopic('HomeConnect/${device.id}');
+    }
+    print('📡 Tous les topics ont été réabonnés.');
+  }
+
+
   void toggleDevice(Device device) {
-    setState(() {
-      device.state = !device.state;
-    });
-    mqtt.publishMessage("HomeConnect/${device.id}", device.state ? "ON" : "OFF");
+    mqtt.publishMessage("HomeConnect/${device.id}", !device.state ? "ON" : "OFF");
   }
 
   Future<void> _refreshDevices() async {
