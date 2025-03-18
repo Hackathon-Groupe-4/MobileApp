@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'dart:math';
+import "./toast_service.dart";
 
 class Mqtt {
   final String broker = '192.168.243.95'; // Remplace par ton broker
@@ -40,11 +41,13 @@ class Mqtt {
   }
 
   void onConnected() {
-    print('✅ MQTT connecté');
+    ToastService.showToast('✅ MQTT connecté');
+    //print('✅ MQTT connecté');
   }
 
   void onDisconnected() {
-    print('❌ MQTT déconnecté, tentative de reconnexion...');
+    ToastService.showToast('❌ MQTT déconnecté, tentative de reconnexion...');
+    //print('❌ MQTT déconnecté, tentative de reconnexion...');
   }
 
   void onSubscribed(String topic) {
@@ -56,8 +59,13 @@ class Mqtt {
   }
 
   void publishMessage(String topic, String message) {
-    final builder = MqttClientPayloadBuilder();
-    builder.addString(message);
-    client!.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
+    try {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString(message);
+      client!.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
+    }
+    catch (e) {
+      ToastService.showToast("❌ Echec de l'envoi du message");
+    }
   }
 }
